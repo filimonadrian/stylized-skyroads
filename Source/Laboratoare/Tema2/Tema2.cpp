@@ -280,7 +280,7 @@ void Tema2::FrameEnd() {
 	// DrawCoordinatSystem(camera->GetViewMatrix(), projectionMatrix);
 }
 
-void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, const glm::vec3& color) {
+void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, const glm::vec3& color, Texture2D *texture1, Texture2D* texture2) {
 	if (!mesh || !shader || !shader->GetProgramID())
 		return;
 
@@ -294,11 +294,14 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 			glUniform1i(deformation, 2);
 		}
 
+	} else if (mesh == meshes["tetrahedron"]) {
+
 	} else {
 		GLint deformation = glGetUniformLocation(shader->GetProgramID(), "deformation");
 		glUniform1i(deformation, 0);
 		glUniform3fv(glGetUniformLocation(shader->program, "object_color"), 1, glm::value_ptr(color));
 	}
+
 	GLint modelLocation = glGetUniformLocation(shader->GetProgramID(), "Model");
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
@@ -309,6 +312,24 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 	GLint projLocation = glGetUniformLocation(shader->GetProgramID(), "Projection");
 	glm::mat4 projectionMatrix = GetSceneCamera()->GetProjectionMatrix();
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
+	if (texture1) {
+		// activate texture location 0
+		glActiveTexture(GL_TEXTURE0);
+		// bind the texture ID
+		glBindTexture(GL_TEXTURE_2D, texture1->GetTextureID());
+		// send texture uniform value
+		glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
+	}
+
+	if (texture2) {
+		//activate texture location 1
+		glActiveTexture(GL_TEXTURE1);
+		//TODO : Bind the texture2 ID
+		glBindTexture(GL_TEXTURE_2D, texture2->GetTextureID());
+		//TODO : Send texture uniform value
+		glUniform1i(glGetUniformLocation(shader->program, "texture_2"), 1);
+	}
 
 	glBindVertexArray(mesh->GetBuffers()->VAO);
 	glDrawElements(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_SHORT, 0);

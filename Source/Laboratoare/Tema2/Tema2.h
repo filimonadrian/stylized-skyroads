@@ -50,7 +50,7 @@ private:
 	void Tema2::generatePlatforms(glm::mat4 modelMatrix);
 
 	void FrameEnd();
-	void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, const glm::vec3& color);
+	void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, const glm::vec3& color, Texture2D* texture1, Texture2D* texture2);
 	void OnInputUpdate(float deltaTime, int mods);
 	void OnKeyPress(int key, int mods);
 	void OnKeyRelease(int key, int mods);
