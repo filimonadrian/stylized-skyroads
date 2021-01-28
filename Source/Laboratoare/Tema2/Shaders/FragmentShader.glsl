@@ -28,12 +28,11 @@ void main() {
 	} else {
 		// out_color = colour1;
 	}
-		out_color = mix(colour1, vec4(frag_color, 1), 0.5f);
+		out_color = mix(colour1, vec4(frag_color, 1), 0.2f);
 
 	if (out_color.a < 0.5f)
 	{
 		discard;
 	}
-
 
 }
