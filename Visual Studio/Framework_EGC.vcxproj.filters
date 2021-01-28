@@ -160,6 +160,9 @@
     <ClCompile Include="..\Source\Laboratoare\Tema2\Random.cpp">
       <Filter>Tema2</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Laboratoare\Tema2\Tetrahedron.cpp">
+      <Filter>Tema2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -283,6 +286,9 @@
       <Filter>Tema2</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Laboratoare\Tema2\Random.h">
+      <Filter>Tema2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Laboratoare\Tema2\Tetrahedron.h">
       <Filter>Tema2</Filter>
     </ClInclude>
   </ItemGroup>

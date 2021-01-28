@@ -49,6 +49,7 @@
     <ClCompile Include="..\Source\Laboratoare\Tema2\Player.cpp" />
     <ClCompile Include="..\Source\Laboratoare\Tema2\Random.cpp" />
     <ClCompile Include="..\Source\Laboratoare\Tema2\Tema2.cpp" />
+    <ClCompile Include="..\Source\Laboratoare\Tema2\Tetrahedron.cpp" />
     <ClCompile Include="..\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +93,7 @@
     <ClInclude Include="..\Source\Laboratoare\Tema2\Player.h" />
     <ClInclude Include="..\Source\Laboratoare\Tema2\Random.h" />
     <ClInclude Include="..\Source\Laboratoare\Tema2\Tema2.h" />
+    <ClInclude Include="..\Source\Laboratoare\Tema2\Tetrahedron.h" />
     <ClInclude Include="..\Source\Laboratoare\Tema2\Transform3D.h" />
   </ItemGroup>
   <ItemGroup>

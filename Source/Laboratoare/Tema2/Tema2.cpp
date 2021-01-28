@@ -6,6 +6,8 @@ using namespace std;
 
 Player player(2.0f, 2.5f, 0);
 std::vector<Platform> platforms(168);
+std::vector<Tetrahedron> tetra(100);
+
 CombustibilBar* combustibilBar;
 
 Tema2::Tema2() {
@@ -18,10 +20,12 @@ void Tema2::Init() {
 	renderCameraTarget = false;
 
 	camera = new CameraTema2::Camera();
-	camera->Set(glm::vec3(2, 4.5f, 3), glm::vec3(2, 1, -2), glm::vec3(0, 1, 0));
+	camera->Set(glm::vec3(2, 4.7f, 3), glm::vec3(2, 1.5f, -2), glm::vec3(0, 1, 0));
 	Platform p;
+	Tetrahedron t;
 	AddMeshToList(player.createPlayer("player"));
 	AddMeshToList(p.createPlatform("platform"));
+	AddMeshToList(t.createTetrahedron("tetrahedron"));
 
 	combustibilBar = new CombustibilBar();
 	clockTime = std::clock();
@@ -44,6 +48,19 @@ void Tema2::Init() {
 			platforms[i].color = BLUE;
 			break;
 		}
+	}
+
+	for (int i = 0; i < tetra.size() / 2; i++) {
+		tetra[i].x = -3;
+		tetra[i].z = (-3) * i;
+		cout << tetra[i].z << endl;
+	}
+
+	int c = 0;
+	for (int i = tetra.size() / 2; i < tetra.size(); i++) {
+		tetra[i].x = 6;
+		tetra[i].z = (-3) * c;
+		c++;
 	}
 
 	projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
@@ -110,6 +127,15 @@ void Tema2::generatePlatforms(glm::mat4 modelMatrix) {
 }
 
 void Tema2::Update(float deltaTimeSeconds) {
+
+	modelMatrix = glm::mat4(1);
+
+	for (int i = 0; i < tetra.size(); i++) {
+		tetra[i].move(deltaTimeSeconds);
+		RenderMesh(meshes["tetrahedron"], shaders["ShaderTema2"], tetra[i].modelMatrix, GREEN, nullptr, nullptr);
+
+	}
+
 
 	modelMatrix = glm::mat4(1);
 	generatePlatforms(modelMatrix);
@@ -214,7 +240,7 @@ void Tema2::RanderPlatforms(float deltaTimeSeconds) {
 		if (!platforms[i].ready) {
 			platforms[i].move(deltaTimeSeconds, speed);
 			if (platforms[i].z < PLATFORM_DESTRUCTION) {
-				RenderMesh(meshes["platform"], shaders["ShaderTema2"], platforms[i].modelMatrix, platforms[i].color);
+				RenderMesh(meshes["platform"], shaders["ShaderTema2"], platforms[i].modelMatrix, platforms[i].color, nullptr, nullptr);
 			}
 		}
 
@@ -233,20 +259,20 @@ void Tema2::RanderPlatforms(float deltaTimeSeconds) {
 		modelMatrix *= Transform3D::Translate(combustibilPos.x, combustibilPos.y, combustibilPos.z);
 		modelMatrix *= Transform3D::RotateOX(combustibilPos.w);
 		modelMatrix *= Transform3D::Scale(0.01f, 0.01f, 0.01f);
-		RenderMesh(combustibilBar->GetCombustibilBar(), shaders["ShaderTema2"], modelMatrix, GREEN);
+		RenderMesh(combustibilBar->GetCombustibilBar(), shaders["ShaderTema2"], modelMatrix, GREEN, nullptr, nullptr);
 
 		modelMatrix *= Transform3D::Scale(gas, 1, 1);
-		RenderMesh(combustibilBar->GetPowerLine(), shaders["ShaderTema2"], modelMatrix, GRAY);
+		RenderMesh(combustibilBar->GetPowerLine(), shaders["ShaderTema2"], modelMatrix, GRAY, nullptr, nullptr);
 	}
 	else {
 		modelMatrix *= Transform3D::Translate(4, 3.32, 3.12);
 		modelMatrix *= Transform3D::RotateOY(45);
 		modelMatrix *= Transform3D::RotateOX(3);
 		modelMatrix *= Transform3D::Scale(0.01f, 0.01f, 0.01f);
-		RenderMesh(combustibilBar->GetCombustibilBar(), shaders["ShaderTema2"], modelMatrix, GREEN);
+		RenderMesh(combustibilBar->GetCombustibilBar(), shaders["ShaderTema2"], modelMatrix, GREEN, nullptr, nullptr);
 
 		modelMatrix *= Transform3D::Scale(gas, 1, 1);
-		RenderMesh(combustibilBar->GetPowerLine(), shaders["ShaderTema2"], modelMatrix, GRAY);
+		RenderMesh(combustibilBar->GetPowerLine(), shaders["ShaderTema2"], modelMatrix, GRAY, nullptr, nullptr);
 	}
 }
 
@@ -262,7 +288,7 @@ void Tema2::RanderPlayer(float deltaTimeSeconds) {
 		modelMatrix *= Transform3D::Translate(player.x, player.y, player.z);
 		modelMatrix *= Transform3D::RotateOX(rotateAngle);
 
-		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0));
+		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0), nullptr, nullptr);
 	/* altfel il scalez cu 0.1 si il las sa cada, setez flagul de gameOver */
 	} else {
 		modelMatrix = glm::mat4(1);
@@ -271,7 +297,7 @@ void Tema2::RanderPlayer(float deltaTimeSeconds) {
 		modelMatrix *= Transform3D::Scale(0.5f, 0.2f, 0.8f);
 		modelMatrix *= Transform3D::RotateOX(rotateAngle);
 
-		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0));
+		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0), nullptr, nullptr);
 		gameOver = 1;
 	}
 }

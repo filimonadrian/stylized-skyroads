@@ -3,25 +3,15 @@
 #include <Component\SimpleScene.h>
 #include <Core/Engine.h>
 #include "Limits.h"
+#include <Laboratoare\Tema2\Transform3D.h>
 
 class Tetrahedron {
 public:
-	float x = 2.0f, y = 2.5f, z = 0.0f;
-
-	int ascension = 0;
-	int isBack = 0;
-
-	float ground = 2.5f;
-	float height = 1.0f;
-	float width = 1.0f;
-
-	float jumpDiff = 20;
-	float speedup = 5;
-	float time = 0;
-
-	bool onPlatform = true;
-	bool inJump = false;
-
+	float x = 4.0f, y = 4, z = 0;
+	
+	float minY = 2, maxY = 4;
+	bool ascending = 0;
+	glm::mat4 modelMatrix;
 
 public:
 	Tetrahedron();

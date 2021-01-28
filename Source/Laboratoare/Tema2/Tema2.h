@@ -17,6 +17,7 @@
 
 #include "CombustibilBar.h"
 #include "Limits.h"
+#include "Tetrahedron.h"
 
 #define MAX_HEIGHT_JUMP 4
 
