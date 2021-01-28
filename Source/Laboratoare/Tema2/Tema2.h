@@ -46,8 +46,8 @@ private:
 	void Update(float deltaTimeSeconds);
 	int Tema2::checkCollision();
 	void Tema2::platformPowerups(int currentPlatform);
-	void Tema2::RanderPlatforms(float deltaTimeSeconds);
-	void RanderPlayer(float deltaTimeSeconds);
+	void Tema2::RenderPlatforms(float deltaTimeSeconds);
+	void RenderPlayer(float deltaTimeSeconds);
 	void Tema2::generatePlatforms(glm::mat4 modelMatrix);
 
 	void FrameEnd();
@@ -80,6 +80,5 @@ protected:
 	int platformStartPos = 1;
 	glm::mat4 projectionMatrix;
 	glm::mat4 modelMatrix;
-	bool projectionType;
-
+	std::unordered_map<std::string, Texture2D*> mapTextures;
 };

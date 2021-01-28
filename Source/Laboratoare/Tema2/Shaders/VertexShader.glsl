@@ -9,14 +9,16 @@ uniform int deformation;
 // UNIFORM PROPERTIES
 layout(location = 0) in vec3 v_position;
 layout(location = 1) in vec3 v_color;
-layout(location = 2) in vec2 v_texture;
+layout(location = 2) in vec2 v_texture_coord;
 layout(location = 3) in vec3 v_normal;
 
 out vec3 frag_position;
 out vec3 frag_normal;
-out vec2 frag_texture;
 out vec3 frag_color;
  
+out vec2 texcoord;
+
+
 float noise(float delta){
     return sin(delta + cos(delta * 90) * 100) * 0.5 + 0.5;
 }
@@ -24,6 +26,8 @@ float noise(float delta){
 void main() {
 	vec3 position = v_position ;
 	frag_color = object_color;
+
+	texcoord = v_texture_coord;
 
     /* sunt pe un powerup, trebuie sa deformez playerul */
     if (deformation == 1) {
@@ -49,7 +53,6 @@ void main() {
     }
    
     frag_normal = v_normal;
-    frag_texture = v_texture;
-		gl_Position = Projection * View * Model * vec4(position , 1.0);
+	gl_Position = Projection * View * Model * vec4(position , 1.0);
 		
 }

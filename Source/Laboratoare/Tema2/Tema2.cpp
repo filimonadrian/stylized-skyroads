@@ -7,7 +7,7 @@ using namespace std;
 Player player(2.0f, 2.5f, 0);
 std::vector<Platform> platforms(168);
 std::vector<Tetrahedron> tetra(100);
-
+const string textureLoc = "Source/Laboratoare/Tema2/Textures/";
 CombustibilBar* combustibilBar;
 
 Tema2::Tema2() {
@@ -26,6 +26,35 @@ void Tema2::Init() {
 	AddMeshToList(player.createPlayer("player"));
 	AddMeshToList(p.createPlatform("platform"));
 	AddMeshToList(t.createTetrahedron("tetrahedron"));
+
+	Mesh* background = new Mesh("background");
+	background->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "box.obj");
+	AddMeshToList(background);
+
+	// Load textures
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D((textureLoc + "platform_texture.jpg").c_str(), GL_CLAMP_TO_BORDER);
+		mapTextures["ground"] = texture;
+	}
+
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D((textureLoc + "tetra_text1.jpg").c_str(), GL_REPEAT);
+		mapTextures["tetra"] = texture;
+	}
+
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D((textureLoc + "player_text.jpg").c_str(), GL_REPEAT);
+		mapTextures["player"] = texture;
+	}
+
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D((textureLoc + "back.jpg").c_str(), GL_REPEAT);
+		mapTextures["background"] = texture;
+	}
 
 	combustibilBar = new CombustibilBar();
 	clockTime = std::clock();
@@ -53,7 +82,6 @@ void Tema2::Init() {
 	for (int i = 0; i < tetra.size() / 2; i++) {
 		tetra[i].x = -3;
 		tetra[i].z = (-3) * i;
-		cout << tetra[i].z << endl;
 	}
 
 	int c = 0;
@@ -128,14 +156,18 @@ void Tema2::generatePlatforms(glm::mat4 modelMatrix) {
 
 void Tema2::Update(float deltaTimeSeconds) {
 
+
+
 	modelMatrix = glm::mat4(1);
 
 	for (int i = 0; i < tetra.size(); i++) {
 		tetra[i].move(deltaTimeSeconds);
-		RenderMesh(meshes["tetrahedron"], shaders["ShaderTema2"], tetra[i].modelMatrix, GREEN, nullptr, nullptr);
-
+		RenderMesh(meshes["tetrahedron"], shaders["ShaderTema2"], tetra[i].modelMatrix, GREEN, mapTextures["tetra"], nullptr);
 	}
 
+	modelMatrix *= Transform3D::Translate(0, 0, 0);
+	modelMatrix *= Transform3D::Scale(150, 150, 150);
+	RenderMesh(meshes["background"], shaders["ShaderTema2"], modelMatrix, GRAY, mapTextures["background"], nullptr);
 
 	modelMatrix = glm::mat4(1);
 	generatePlatforms(modelMatrix);
@@ -156,15 +188,15 @@ void Tema2::Update(float deltaTimeSeconds) {
 		blockSpeed = 0;
 	}
 
-	RanderPlatforms(deltaTimeSeconds);
+	RenderPlatforms(deltaTimeSeconds);
 	/*  */
 	int currentPlatform = checkCollision();
 	if (currentPlatform >= 0 || player.isBack == 0) {
 		platformPowerups(currentPlatform);
-		RanderPlayer(deltaTimeSeconds);
+		RenderPlayer(deltaTimeSeconds);
 	} else {
 		player.y -= deltaTimeSeconds * 3;
-		RanderPlayer(deltaTimeSeconds);
+		RenderPlayer(deltaTimeSeconds);
 	}
 
 }
@@ -232,7 +264,7 @@ void Tema2::platformPowerups(int currentPlatform) {
 	}
 }
 
-void Tema2::RanderPlatforms(float deltaTimeSeconds) {
+void Tema2::RenderPlatforms(float deltaTimeSeconds) {
 
 	/* daca platformele sunt */
 	for (int i = 0; i < platforms.size(); i++) {
@@ -240,10 +272,9 @@ void Tema2::RanderPlatforms(float deltaTimeSeconds) {
 		if (!platforms[i].ready) {
 			platforms[i].move(deltaTimeSeconds, speed);
 			if (platforms[i].z < PLATFORM_DESTRUCTION) {
-				RenderMesh(meshes["platform"], shaders["ShaderTema2"], platforms[i].modelMatrix, platforms[i].color, nullptr, nullptr);
+				RenderMesh(meshes["platform"], shaders["ShaderTema2"], platforms[i].modelMatrix, platforms[i].color, mapTextures["ground"], nullptr);
 			}
 		}
-
 	}
 
 	modelMatrix = glm::mat4(1);
@@ -276,7 +307,7 @@ void Tema2::RanderPlatforms(float deltaTimeSeconds) {
 	}
 }
 
-void Tema2::RanderPlayer(float deltaTimeSeconds) {
+void Tema2::RenderPlayer(float deltaTimeSeconds) {
 	/* move player */
 	player.move(deltaTimeSeconds);
 
@@ -288,7 +319,7 @@ void Tema2::RanderPlayer(float deltaTimeSeconds) {
 		modelMatrix *= Transform3D::Translate(player.x, player.y, player.z);
 		modelMatrix *= Transform3D::RotateOX(rotateAngle);
 
-		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0), nullptr, nullptr);
+		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0), mapTextures["player"], nullptr);
 	/* altfel il scalez cu 0.1 si il las sa cada, setez flagul de gameOver */
 	} else {
 		modelMatrix = glm::mat4(1);
@@ -297,7 +328,7 @@ void Tema2::RanderPlayer(float deltaTimeSeconds) {
 		modelMatrix *= Transform3D::Scale(0.5f, 0.2f, 0.8f);
 		modelMatrix *= Transform3D::RotateOX(rotateAngle);
 
-		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0), nullptr, nullptr);
+		RenderMesh(meshes["player"], shaders["ShaderTema2"], modelMatrix, glm::vec3(1, 1, 0), mapTextures["player"], nullptr);
 		gameOver = 1;
 	}
 }
@@ -321,11 +352,15 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 		}
 
 	} else if (mesh == meshes["tetrahedron"]) {
-
+		glUniform1i(glGetUniformLocation(shader->program, "mix_textures"), true);
+		GLint deformation = glGetUniformLocation(shader->GetProgramID(), "deformation");
+		glUniform1i(deformation, 0);
 	} else {
 		GLint deformation = glGetUniformLocation(shader->GetProgramID(), "deformation");
 		glUniform1i(deformation, 0);
 		glUniform3fv(glGetUniformLocation(shader->program, "object_color"), 1, glm::value_ptr(color));
+		glUniform1i(glGetUniformLocation(shader->program, "mix_textures"), false);
+
 	}
 
 	GLint modelLocation = glGetUniformLocation(shader->GetProgramID(), "Model");
